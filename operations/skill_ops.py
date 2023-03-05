@@ -3,7 +3,7 @@ import models, schemas
 
 class SkillOps:
 
-    def add_skill(db: Session, skill: schemas.skill):
+    def add_skill(db: Session, skill: schemas.Skill):
         skill_instance = models.Skill(name=skill.name)
         for x in skill.career:
             career = db.query(models.Career).filter(models.Career.id == x).first()
@@ -38,3 +38,32 @@ class SkillOps:
         whole_result = whole_result.union(set(partial_result))
 
         return whole_result
+    
+    def update(id:int,skill:schemas.Skill,db:Session):
+
+        skill_instance = db.query(models.Skill).filter(models.Skill.id == id).one_or_none()
+        skill_instance.courses_for_skill.clear()
+        skill_instance.target.clear()
+
+        for x in skill.career:
+            career = db.query(models.Career).filter(models.Career.id == x).first()
+            skill_instance.target.append(career)
+        for x in skill.course:
+            course = db.query(models.Course).filter(models.Course.id == x).first()
+            skill_instance.courses_for_skill.append(course)
+
+        db.commit()
+
+        return True
+
+    def remove(id:int,db:Session):
+        
+        skill_instance = db.query(models.Skill).filter(models.Skill.id == id).one_or_none()
+        skill_instance.courses_for_skill.clear()
+        skill_instance.target.clear()
+
+        db.query(models.Skill).filter(models.Skill.id == id).delete(synchronize_session=False)
+        db.commit()
+        return True
+        
+

@@ -73,3 +73,16 @@ class Course(Base):
     target_skill: Mapped[List[Skill]] = relationship(
         secondary=skill_course,back_populates="courses_for_skill"
     )
+
+    # creator_id:Mapped[int] = mapped_column(ForeignKey("users.id"))
+    # creator:Mapped[User] = relationship(back_populates="published_courses")
+
+class User(Base):
+    __tablename__ = "users"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String,unique=True)
+    email: Mapped[str] = mapped_column(String,unique=True)
+    password: Mapped[str] = mapped_column()
+    
+    # published_courses: Mapped[List[Course]] = relationship(back_populates="creator")

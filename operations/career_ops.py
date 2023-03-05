@@ -26,7 +26,7 @@ class CareerOps:
 
         return whole_result
     
-    def add_career(db: Session, career: schemas.career):
+    def add_career(db: Session, career: schemas.Career):
         career_instance = models.Career(name=career.name)
         for x in career.skill:
             skill = db.query(models.Skill).filter(models.Skill.id == x).first()
@@ -39,4 +39,27 @@ class CareerOps:
         db.refresh(career_instance)
 
         return CareerOps.show_career_id(career_instance.id, db=db)
+    
+    def update(id:int,career:schemas.Career,db:Session):
+
+        career_instance = db.query(models.Career).filter(models.Career.id == id).one_or_none()
+        career_instance.requirements.clear()
+        career_instance.courses_for_career.clear()
+        for x in career.skill:
+            skill = db.query(models.Skill).filter(models.Skill.id == x).first()
+            career_instance.requirements.append(skill)
+        for x in career.course:
+            course = db.query(models.Course).filter(models.Course.id == x).first()
+            career_instance.courses_for_career.append(course)
+
+        db.commit()
+        return True
+    
+    def remove(id:int,db:Session):
+        career_instance = db.query(models.Career).filter(models.Career.id == id).one_or_none()
+        career_instance.requirements.clear()
+        career_instance.courses_for_career.clear()
+        db.query(models.Career).filter(models.Career.id == id).delete(synchronize_session=False)
+        db.commit()
+        return True
     

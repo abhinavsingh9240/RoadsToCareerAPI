@@ -11,7 +11,7 @@ router = APIRouter(
 
 
 @router.post("/")
-def post_skill(skill:schemas.skill, db:Session = Depends(get_db)):
+def post_skill(skill:schemas.Skill, db:Session = Depends(get_db)):
     return SkillOps.add_skill(db=db,skill=skill)
 
 @router.get("/")
@@ -25,3 +25,14 @@ def get_skill_by_id(id:int,db:Session = Depends(get_db)):
 @router.get("/search/{query}")
 def get_skill_by_name(query:str,db:Session = Depends(get_db)):
     return SkillOps.skill_search(query,db)
+
+@router.delete("/{id}")
+def remove_skill(id:int, db:Session=Depends(get_db)):
+    
+    SkillOps.remove(id,db)
+    return {"done"}
+
+@router.put("/{id}")
+def update_skill(id:int,request:schemas.Skill,db:Session=Depends(get_db)):
+    SkillOps.update(id,request,db)
+    return {"Done"}
