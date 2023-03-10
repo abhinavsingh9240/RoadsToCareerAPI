@@ -1,6 +1,7 @@
 from fastapi.security import OAuth2PasswordBearer
 from fastapi import Depends, HTTPException, status
 from tokens import Token
+from operations.user_ops import UserOps
 class OAuth2:
 
     oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
@@ -12,5 +13,7 @@ class OAuth2:
             headers={"WWW-Authenticate": "Bearer"},
         )
         
-        return Token.verify_token(token,credentials_exception)
+        email = Token.verify_token(token,credentials_exception)
+
+        return UserOps.get_by_email(email)
         
