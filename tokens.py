@@ -21,5 +21,6 @@ class Token:
             if email is None:
                 raise credentials_exception
             token_data = schemas.TokenData(email=email)
+            return token_data.email
         except JWTError:
             raise credentials_exception
