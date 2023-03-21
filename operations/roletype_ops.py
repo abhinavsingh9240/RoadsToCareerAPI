@@ -8,9 +8,9 @@ class RoleTypeOps:
     """
 
     # CREATE
-    def add(type:str,db:Session):
+    def add(name:str,db:Session):
 
-        instance = models.RoleType(name = type)
+        instance = models.RoleType(name = name)
 
         db.add(instance)
         db.commit()
@@ -40,4 +40,21 @@ class RoleTypeOps:
         db.query(models.RoleType).filter(models.RoleType.id == id).update({models.RoleType.name: type},synchronize_session=False)
         db.commit()
         return True
+    
+    def search(search_query:str,db:Session):
+
+        result = set()
+        partial_result = db.query(models.RoleType).filter(models.RoleType.name.ilike(f"{search_query}%"))
+
+        result = result.union(set(partial_result))
+
+        partial_result = db.query(models.RoleType).filter(models.RoleType.name.ilike(f"%{search_query}%"))
+
+        result = result.union(set(partial_result))
+
+        return result
+
+        
+    
+
 

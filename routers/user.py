@@ -25,52 +25,52 @@ router = APIRouter(
 # TODO: Add the like functionality for user
 
 @router.get("/profile/",response_model=schemas.UserBase)
-def profile(user_id = Depends(OAuth2.get_current_user),db:Session = Depends(get_db)):
-    response = UserOps.get_by_id(user_id,db)
+def profile(email:str = Depends(OAuth2.get_current_user),db:Session = Depends(get_db)):
+    response = UserOps.get_user(email,db)
     return response
 
 @router.get("/courses",response_model=List[schemas.Base])
-def get_liked_courses(limit:Optional[int],user_id = Depends(OAuth2.get_current_user),db:Session = Depends(get_db)):
+def get_liked_courses(limit:Optional[int] = None,email:str = Depends(OAuth2.get_current_user),db:Session = Depends(get_db)):
     if limit is None:
-        response =  UserOps.liked_courses(user_id,db)
+        response =  UserOps.liked_courses(email,db)
     else:
-        response = UserOps.liked_courses(user_id,db)[:limit]
+        response = UserOps.liked_courses(email,db)[:limit]
     
     return response
 
 @router.get("/roles",response_model=List[schemas.Base])
-def get_liked_roles(limit:Optional[int],user_id = Depends(OAuth2.get_current_user),db:Session = Depends(get_db)):
+def get_liked_roles(limit:Optional[int] = None,email:str = Depends(OAuth2.get_current_user),db:Session = Depends(get_db)):
     if limit is None:
-        response = UserOps.liked_roles(user_id,db)
+        response = UserOps.liked_roles(email,db)
     else:
-        response = UserOps.liked_roles(user_id,db)[:limit]
+        response = UserOps.liked_roles(email,db)[:limit]
         
     return response
 
 @router.get("/skills",response_model=List[schemas.Base])
-def get_liked_roles(limit:Optional[int],user_id = Depends(OAuth2.get_current_user),db:Session = Depends(get_db)):
+def get_liked_skills(limit:Optional[int] = None,email:str = Depends(OAuth2.get_current_user),db:Session = Depends(get_db)):
     if limit is None:
-        response = UserOps.liked_skills(user_id,db)
+        response = UserOps.liked_skills(email,db)
     else:
-        response = UserOps.liked_skills(user_id,db)[:limit]
+        response = UserOps.liked_skills(email,db)[:limit]
         
     return response
 
 @router.put("/name")
 def update_name(request:schemas.NameUpdate,
-                user_id:schemas.User = Depends(OAuth2.get_current_user),
+                email:str= Depends(OAuth2.get_current_user),
                 db:Session = Depends(get_db)):
-    return UserOps.update_name(request,user_id,db)
+    return UserOps.update_name(request,email,db)
 
 @router.put("/email")
 def update_email(request:schemas.EmailUpdate,
-                user_id:schemas.User = Depends(OAuth2.get_current_user),
+                email:str = Depends(OAuth2.get_current_user),
                 db:Session = Depends(get_db)):
-    return UserOps.update_email(request,user_id,db)
+    return UserOps.update_email(request,email,db)
 
 @router.put("/password")
 def update_password(request:schemas.PasswordUpdate,
-                    user_id:schemas.User = Depends(OAuth2.get_current_user),
+                    email:str = Depends(OAuth2.get_current_user),
                     db:Session = Depends(get_db)):
     
-    return UserOps.update_password(request,user_id)
+    return UserOps.update_password(request,email)

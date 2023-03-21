@@ -13,9 +13,9 @@ router = APIRouter(
 )
 
 @router.post("/register")
-def register(request:schemas.User,db:Session = Depends(get_db)):
+def register(request:schemas.Register,db:Session = Depends(get_db)):
     password = Hash.get_password_hash(request.password)
-    user_instance = models.User(email = request.email, name = request.name,pasword = password)
+    user_instance = models.User(email = request.email, name = request.name,password = password)
     db.add(user_instance)
     db.commit()
     db.refresh(user_instance)
@@ -31,6 +31,6 @@ def login(request: OAuth2PasswordRequestForm = Depends(),db:Session = Depends(ge
     if not Hash.verify_password(request.password,user.password):
         raise HTTPException(status_code= status.HTTP_404_NOT_FOUND,detail="Invalid Password/Username")
 
-    access_token = Token.create_access_token(data={"sub": user.id})
+    access_token = Token.create_access_token(data={"sub": user.email})
 
     return {"access_token": access_token, "token_type": "bearer"}

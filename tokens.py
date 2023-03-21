@@ -1,11 +1,14 @@
 from datetime import datetime, timedelta
 from jose import jwt, JWTError
-import schemas
+import models
+from fastapi import Depends
+from database import get_db
+from sqlalchemy.orm import Session
 
 class Token:
     SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
     ALGORITHM = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES = 30
+    ACCESS_TOKEN_EXPIRE_MINUTES = 36000
 
     def create_access_token(data: dict):
         to_encode = data.copy()
@@ -17,9 +20,13 @@ class Token:
     def verify_token(token:str,credentials_exception):
         try:
             payload = jwt.decode(token, Token.SECRET_KEY, algorithms=[Token.ALGORITHM])
-            user_id: str = payload.get("sub")
-            if user_id is None:
+            email: str = payload.get("sub")
+            
+            if email is None:
                 raise credentials_exception
-            return user_id
-        except JWTError:
+            return email
+        except JWTError as e:
+            print(e)
             raise credentials_exception
+        
+    

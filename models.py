@@ -37,6 +37,14 @@ skill_course = Table(
     extend_existing=True,
 )
 
+course_required_skill = Table(
+    "course_required_skill",
+    Base.metadata,
+    Column("course_id",ForeignKey("courses.id"),primary_key=True),
+    Column("skill_id",ForeignKey("skills.id"),primary_key=True),
+    extend_existing=True,
+)
+
 
 courses_liked_by_user = Table(
     "courses_liked_by_user",
@@ -70,6 +78,13 @@ role_education = Table(
     extend_existing=True,
 )
 
+language_course = Table(
+    "language_course",
+    Base.metadata,
+    Column("course_id",ForeignKey("courses.id"),primary_key=True),
+    Column("language_id",ForeignKey("languages.id"),primary_key=True),
+    extend_existing=True,
+)
 
 # Classes of Entitiy in Database
 # Entities - User, Contributor, Role, Course, Skill, Education, Language, Industry 
@@ -79,7 +94,7 @@ class User(Base):
     __table_args__ = {'extend_existing': True}
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    email: Mapped[str] = mapped_column(String)
+    name: Mapped[str] = mapped_column(String)
     email: Mapped[str] = mapped_column(String,unique=True,index=True)
     password: Mapped[str] = mapped_column()
     
@@ -108,9 +123,9 @@ class Contributor(Base):
 
     description: Mapped[str] = mapped_column()
 
-    created_courses: Mapped[List[Course]] = relationship(back_populates="creator")
-    created_roles: Mapped[List[Role]] = relationship(back_populates="creator")
-    created_skills: Mapped[List[Skill]] = relationship(back_populates="creator")
+    created_courses: Mapped[List[Course]] = relationship()
+    created_roles: Mapped[List[Role]] = relationship()
+    created_skills: Mapped[List[Skill]] = relationship()
     
 
 class Role(Base):
@@ -120,8 +135,8 @@ class Role(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name:Mapped[str] = mapped_column(String,unique= True)
-    descriptions: Mapped[str] = mapped_column(default=None)
-    Avg_salary: Mapped[int] =  mapped_column()
+    description: Mapped[str] = mapped_column(default=None)
+    avg_salary: Mapped[int] =  mapped_column()
 
     # likes by users (many to many)
     liked_by: Mapped[List[User]] = relationship(
@@ -130,7 +145,7 @@ class Role(Base):
 
     # creator information (many to one )
     creator_id: Mapped[int] = mapped_column(ForeignKey("contributors.id"))
-    creator: Mapped[User] = relationship(back_populates="created_roles")
+    creator: Mapped[Contributor] = relationship(back_populates="created_roles")
 
     #skilled required for role ( many to many )
     required_skills: Mapped[List[Skill]] = relationship(
@@ -171,7 +186,7 @@ class Course(Base):
     )
     #creator information
     creator_id: Mapped[int] = mapped_column(ForeignKey("contributors.id"))
-    creator: Mapped[User] = relationship(back_populates="created_courses")
+    creator: Mapped[Contributor] = relationship(back_populates="created_courses")
 
     # role that will be achieved
     target_roles: Mapped[List[Role]] = relationship(
@@ -184,10 +199,15 @@ class Course(Base):
     )
 
     #prerequisite skills
-    skills_required : Mapped[List[Skill]] = relationship()
+    skills_required : Mapped[List[Skill]] = relationship(
+        secondary=course_required_skill, back_populates = "further_courses"
+    )
+    # skills_required_id: Mapped[List[int]] = mapped_column(ForeignKey("skills.id"))
 
     #language of course
-    language: Mapped[List[Language]] = relationship()
+    languages: Mapped[List[Language]] = relationship(
+        back_populates="courses",secondary=language_course
+    )
     
 
 
@@ -206,7 +226,7 @@ class Skill(Base):
         secondary= skills_liked_by_user, back_populates="liked_skills"
     )
     creator_id: Mapped[int] = mapped_column(ForeignKey("contributors.id"))
-    creator: Mapped[User] = relationship(back_populates="created_skills")
+    creator: Mapped[Contributor] = relationship(back_populates="created_skills")
 
     roles_for_skill: Mapped[List[Role]] = relationship(
         secondary=role_skill, back_populates="required_skills"
@@ -217,6 +237,9 @@ class Skill(Base):
         secondary=skill_course, back_populates="target_skill"
     )
 
+    further_courses : Mapped[List[Course]] = relationship(
+        secondary=course_required_skill, back_populates = "skills_required"
+    )
 
 
 
@@ -251,4 +274,10 @@ class Language(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(unique=True)
+
+    courses:Mapped[List[Course]] = relationship(
+        secondary=language_course, back_populates="languages"
+    )
+
+    
      

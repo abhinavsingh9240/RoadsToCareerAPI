@@ -34,6 +34,10 @@ class LanguageOps:
 
     def delete(id:int,db:Session):
         
+        language_instance = db.query(models.Language).filter(models.Language.id == id).one_or_none()
+
+        language_instance.courses.clear()
+
         db.query(models.Language).filter(models.Language.id == id).delete(synchronize_session=False)
         db.commit()
 
@@ -48,6 +52,20 @@ class LanguageOps:
         
         db.commit()
 
-        return True
+        return LanguageOps.get(id,db)
     
+    def search(search_query: str, db:Session):
+        
+        result = set()
+        more_result = db.query(models.Language).\
+            filter(models.Language.name.ilike(f"{search_query}%")).all()
+        result = result.union(set(more_result))
+
+        more_result = db.query(models.Language).\
+            filter(models.Language.name.ilike(f"%{search_query}%")).all()
+        
+        result = result.union(set(more_result))
+
+        return result
+        
     

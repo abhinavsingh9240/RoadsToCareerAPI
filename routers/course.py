@@ -23,8 +23,8 @@ router = APIRouter(
 """
 
 @router.post("/")
-def post_course(course:schemas.CourseBase,db:Session = Depends(get_db),user_id:int = Depends(OAuth2.get_current_user)):
-    return CourseOps.add_course(course=course,db=db,user_id = user_id)
+def post_course(course:schemas.CourseBase,db:Session = Depends(get_db),email:str = Depends(OAuth2.get_current_user)):
+    return CourseOps.add_course(course=course,db=db,email = email)
 
 @router.get("/")
 def get_course(db:Session = Depends(get_db)):
@@ -32,17 +32,17 @@ def get_course(db:Session = Depends(get_db)):
 
 @router.get("/{id}")
 def get_course_by_id(id:int,db:Session = Depends(get_db)):
-    return CourseOps.show_course_id(id,db)
+    return CourseOps.show_course_by_id(id,db)
 
 @router.get("/search/{query}")
 def get_course_by_name(query:str,db:Session = Depends(get_db)):
     return CourseOps.course_search(query,db)
 
 @router.delete("/{id}")
-def delete_course(id:int,db:Session = Depends(get_db)):
-    return {"Done"} if CourseOps.remove_course(id=id,db=db) else {"Not Completed"}
+def delete_course(id:int,db:Session = Depends(get_db),email = Depends(OAuth2.get_current_user)):
+    return {"Done"} if CourseOps.remove_course(id=id,db=db,email=email) else {"Not Completed"}
 
 @router.put("/{id}")
-def update_course(id,request:schemas.Course,db:Session = Depends(get_db)):
-    CourseOps.update_course(id,request,db)
+def update_course(id,request:schemas.CourseBase,db:Session = Depends(get_db),email = Depends(OAuth2.get_current_user),):
+    CourseOps.update_course(id,request,db,email=email)
     return {"Done"}

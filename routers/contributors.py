@@ -26,40 +26,48 @@ router = APIRouter(
     PUT /contributor/description   -> To update the contributor description
 """
 
-@router.get("")
-def get_contributor_profile(user_id:int = Depends(OAuth2.get_current_user),db:Session = Depends(get_db)):
+@router.post("/{id}/promote")
+def promote_user(id:int,db:Session = Depends(get_db)):
+    return ContributorOps.promote(user_id=id,db=db)
 
-    return ContributorOps.get_contributor_profile(user_id,db)
+@router.post("/{id}/demote")
+def demote_user(id:int,db:Session = Depends(get_db)):
+    return ContributorOps.demote(id,db)
+
+@router.get("",response_model=schemas.ContributorResponse)
+def get_contributor_profile(email:str = Depends(OAuth2.get_current_user),db:Session = Depends(get_db)):
+    return ContributorOps.get_contributor_profile(email=email,db = db)
 
 @router.get("/courses",response_model=List[schemas.Base])
-def get_contributor_profile(user_id:int = Depends(OAuth2.get_current_user),db:Session=Depends(get_db)):
-    return ContributorOps.get_contributor_courses(user_id,db)
+def get_contributor_courses(email:str = Depends(OAuth2.get_current_user),db:Session=Depends(get_db)):
+    return ContributorOps.get_contributor_courses(email=email,db = db)
 
 @router.get("/roles",response_model=List[schemas.Base])
-def get_contributor_profile(user_id:int = Depends(OAuth2.get_current_user),db:Session=Depends(get_db)):
-    return ContributorOps.get_contributor_roles(user_id,db)
+def get_contributor_roles(email:str = Depends(OAuth2.get_current_user),db:Session=Depends(get_db)):
+    return ContributorOps.get_contributor_roles(email=email,db = db)
 
-@router.get("/courses",response_model=List[schemas.Base])
-def get_contributor_profile(user_id:int = Depends(OAuth2.get_current_user),db:Session=Depends(get_db)):
-    return ContributorOps.get_contributor_skills(user_id,db)
+@router.get("/skills",response_model=List[schemas.Base])
+def get_contributor_skills(email:str = Depends(OAuth2.get_current_user),db:Session=Depends(get_db)):
+    return ContributorOps.get_contributor_skills(email=email,db = db)
 
 @router.put("/description")
-def update_description(request:schemas.UpdateContribDesc,user_id:int = Depends(OAuth2.get_current_user),db:Session=Depends(get_db)):
-    return ContributorOps.update_description(request.desc,user_id,db)
+def update_description(request:schemas.UpdateContribDesc,email:str = Depends(OAuth2.get_current_user),db:Session=Depends(get_db)):
+    return ContributorOps.update_description(newdesc = request.desc,email = email,db = db)
 
-@router.get("{id}")
+@router.get("/{id}",response_model=schemas.ContributorResponse)
 def get_contributor_profile_by_id(id:int,db:Session = Depends(get_db)):
-    return ContributorOps.get_contributor_profile(id,db)
+    return ContributorOps.get_contributor_profile(db = db,id = id)
 
 @router.get("/{id}/courses",response_model=List[schemas.Base])
-def get_contributor_profile_by_id(id:int,db:Session=Depends(get_db)):
-    return ContributorOps.get_contributor_courses(id,db)
+def get_contributor_course_by_id(id:int,db:Session=Depends(get_db)):
+    return ContributorOps.get_contributor_courses(db = db,id = id)
 
 @router.get("/{id}/roles",response_model=List[schemas.Base])
-def get_contributor_profile_by_id(id:int,db:Session=Depends(get_db)):
-    return ContributorOps.get_contributor_roles(id,db)
+def get_contributor_roles_by_id(id:int,db:Session=Depends(get_db)):
+    return ContributorOps.get_contributor_roles(db = db,id = id)
 
-@router.get("/{id}/courses",response_model=List[schemas.Base])
-def get_contributor_profile_by_id(id:int,db:Session=Depends(get_db)):
-    return ContributorOps.get_contributor_skills(id,db)
+@router.get("/{id}/skills",response_model=List[schemas.Base])
+def get_contributor_skills_by_id(id:int,db:Session=Depends(get_db)):
+    return ContributorOps.get_contributor_skills(db = db,id = id)
+
 
