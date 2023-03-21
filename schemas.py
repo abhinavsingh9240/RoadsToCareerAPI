@@ -1,22 +1,27 @@
 from pydantic import BaseModel
 from typing import List,Union
 
-class Career(BaseModel):
+class Base(BaseModel):
+    id:int
     name:str
-    skill:List[int] = [] 
-    course:List[int] = []
 
-class Skill(BaseModel):
+class CourseBase(BaseModel):
     name:str
-    career:List[int] = []
-    course:List[int] = []
+    link:str
+    duration_hours:int
+    is_free:bool
+    roles:List[int]
+    target_skills:List[int]
+    languages:List[int]
+    skills_required:List[int]
+    
 
-class Course(BaseModel):
+class UserBase(BaseModel):
     name:str
-    skill:List[int] = []
-    career:List[int] = []
+    email:str
+    is_contributor:bool
 
-class User(BaseModel):
+class Register(BaseModel):
     name:str
     email:str
     password:str
@@ -29,6 +34,17 @@ class Token(BaseModel):
     access_token: str
     token_type: str
 
+class NameUpdate(BaseModel):
+    name:str
+    password:str
 
-class TokenData(BaseModel):
-    email: Union[str, None] = None
+class EmailUpdate(BaseModel):
+    email:str
+    password:str
+
+class PasswordUpdate(BaseModel):
+    old_password:str
+    new_password:str
+
+class UpdateContribDesc(BaseModel):
+    desc:str

@@ -79,8 +79,8 @@ class User(Base):
     __table_args__ = {'extend_existing': True}
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String)
-    email: Mapped[str] = mapped_column(String,unique=True)
+    email: Mapped[str] = mapped_column(String)
+    email: Mapped[str] = mapped_column(String,unique=True,index=True)
     password: Mapped[str] = mapped_column()
     
     contributor: Mapped[Optional[Contributor]] = relationship(back_populates="user")
@@ -162,7 +162,7 @@ class Course(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String,unique= True)
     link: Mapped[str] = mapped_column(unique=True)
-    Duration_Hours:Mapped[int]  = mapped_column() 
+    duration_hours:Mapped[int]  = mapped_column() 
     is_free: Mapped[bool] = mapped_column()
 
     # relationships
