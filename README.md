@@ -1,2 +1,2 @@
 # RoadsToCareerAPI
-This is the project initiated by me to guide the people towards their career and goals
+Roads To Career is an api to guide people in their dream jobs and career.
