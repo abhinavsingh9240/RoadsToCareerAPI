@@ -112,6 +112,9 @@ class User(Base):
         secondary=skills_liked_by_user, back_populates="liked_by"
     )    
 
+    def __str__(self) -> str:
+        return f"{self.__class__}({self.id},{self.name})"
+
 
 class Contributor(Base):
     
@@ -126,6 +129,9 @@ class Contributor(Base):
     created_courses: Mapped[List[Course]] = relationship()
     created_roles: Mapped[List[Role]] = relationship()
     created_skills: Mapped[List[Skill]] = relationship()
+
+    def __str__(self) -> str:
+        return f"{self.__class__}({self.id})"
     
 
 class Role(Base):
@@ -166,7 +172,8 @@ class Role(Base):
     type_id:Mapped[int] = mapped_column(ForeignKey("role_type.id"))
     type: Mapped[RoleType] = relationship(back_populates= "roles")
 
-
+    def __str__(self) -> str:
+        return f"{self.__class__}({self.id},{self.name})"
 
 class Course(Base):
 
@@ -209,6 +216,8 @@ class Course(Base):
         back_populates="courses",secondary=language_course
     )
     
+    def __str__(self) -> str:
+        return f"{self.__class__}({self.id},{self.name})"
 
 
 class Skill(Base):
@@ -241,6 +250,9 @@ class Skill(Base):
         secondary=course_required_skill, back_populates = "skills_required"
     )
 
+    def __str__(self) -> str:
+        return f"{self.__class__}({self.id},{self.name})"
+
 
 
 class RoleType(Base):
@@ -252,6 +264,9 @@ class RoleType(Base):
     name: Mapped[str] = mapped_column(unique=True)
 
     roles:Mapped[List[Role]] = relationship(back_populates="type")
+
+    def __str__(self) -> str:
+        return f"{self.__class__}({self.id},{self.name})"
 
 class Education(Base):
 
@@ -267,6 +282,9 @@ class Education(Base):
         secondary=role_education, back_populates="education"
     )
 
+    def __str__(self) -> str:
+        return f"{self.__class__}({self.id},{self.name})"
+
 class Language(Base):
 
     __tablename__ = "languages"
@@ -278,6 +296,9 @@ class Language(Base):
     courses:Mapped[List[Course]] = relationship(
         secondary=language_course, back_populates="languages"
     )
+
+    def __str__(self) -> str:
+        return f"{self.__class__}({self.id},{self.name})"
 
     
      
